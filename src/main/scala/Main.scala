@@ -9,7 +9,7 @@ object SimpleApp {
     );
     var data = new DataAccess[RDD[String], String] {
       override def readData(): RDD[String] = {
-        spark.textFile(sys.env("DATA_FILE_PATH"))
+        spark.textFile(f"${sys.env("DATA_DIR")}/measurements.txt")
       }
       override def writeData(data: String): Unit = {
         println(data)
