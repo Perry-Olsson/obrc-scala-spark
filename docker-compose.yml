@@ -1,0 +1,10 @@
+name: obrc-scala-spark
+
+services:
+  spark:
+    image: obrc-scala-spark
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"

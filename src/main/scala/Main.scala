@@ -1,27 +1,25 @@
 /* SimpleApp.scala */
 import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.rdd.RDD
 
 object SimpleApp {
   def main(args: Array[String]): Unit = {
-    obrc()
-  }
-
-  def example(): Unit = {
-    val sc = new SparkContext(
+    val spark = new SparkContext(
       new SparkConf().setAppName("obrc-scala")
     );
-    val lines = sc.textFile("/home/perry/personal/scala-projects/spark-examples/input.txt")
-    val length = lines.map(s => s.length)
-      .reduce((a, b) => a + b)
-    println(length)
+    var data = new DataAccess[RDD[String], String] {
+      override def readData(): RDD[String] = {
+        spark.textFile(sys.env("DATA_FILE_PATH"))
+      }
+      override def writeData(data: String): Unit = {
+        println(data)
+      }
+    }
+    obrc(data)
   }
 
-  def obrc(): Unit = {
-    val sc = new SparkContext(
-      new SparkConf().setAppName("obrc-scala")
-    );
-    val logFile = "/home/perry/personal/1brc/measurements.txt"
-    val data = sc.textFile(logFile)
+  def obrc(dataAccess: DataAccess[RDD[String], String]): Unit = {
+    val data = dataAccess.readData()
     val result = data.map(split)
       .combineByKey(v => new Result(v, v, v, 1), accumulate, merge)
       .sortByKey(ascending = true)
@@ -29,7 +27,7 @@ object SimpleApp {
       .collect()
       .mkString("{", ", ", "}")
 
-    println(result)
+    dataAccess.writeData(result)
   }
 
   def split(s: String): (String, Double) = {
@@ -67,4 +65,10 @@ object SimpleApp {
       f"$min/$max/${total / count}%.1f"
     }
   }
+}
+
+trait DataAccess[T, K]{
+  def readData(): T
+
+  def writeData(data: K): Unit 
 }

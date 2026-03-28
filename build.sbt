@@ -10,4 +10,5 @@ lazy val root = project
 
     libraryDependencies += "org.scalameta" %% "munit" % "1.2.4" % Test,
     libraryDependencies += "org.apache.spark" %% "spark-sql" % "4.1.1",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % Test
   )
