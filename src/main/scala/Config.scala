@@ -1,16 +1,20 @@
 class Config(
   val env: String,
-  val dataDir: String,
-  val dataFile: String
+  val fileName: String,
+  val dataAccessDriver: String
 )
 
 object Config {
   def build(args: Array[String]): Config = {
-    println(args)
+    var fileName = sys.env("DATA_FILE")
+    if (args.length > 0) {
+      fileName = args(0)
+    }
+    var dataAccessDriver = sys.env("DATA_ACCESS_DRIVER")
     new Config(
       env = sys.env("ENV"),
-      dataDir = sys.env("DATA_DIR"),
-      dataFile = sys.env("DATA_FILE")
+      fileName = fileName,
+      dataAccessDriver = dataAccessDriver
     );
   }
 }

@@ -1,0 +1,4 @@
+Alice Springs;6.0
+Asmara;14.9
+Birao;16.2
+Denver;15.8

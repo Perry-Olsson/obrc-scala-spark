@@ -1,7 +1,7 @@
 name: obrc-scala-spark
 
 services:
-  spark:
+  spark-master:
     image: obrc-scala-spark
     container_name: master
     build:
@@ -16,3 +16,4 @@ services:
       - ENV=local
       - DATA_DIR=/app/data
       - DATA_FILE=measurements.txt
+      - DATA_ACCESS_DRIVER=local
