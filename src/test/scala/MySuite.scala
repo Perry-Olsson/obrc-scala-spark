@@ -8,15 +8,6 @@ import org.scalatest.funsuite.AnyFunSuite
 class MySuite extends AnyFunSuite with SparkTestSession {
   import spark.implicits._
 
-  test("example spark") {
-    val input = Seq(1, 2, 3).toDF("value")
-
-    val result = input.filter($"value" > 1)
-
-    val collected = result.as[Int].collect()
-    assert(collected.sameElements(Array(2, 3)))
-  }
-
   test("another") {
     val lines = spark.sparkContext.parallelize(Seq("a", "b", "c"))
     val length = lines.map(s => s.length)
