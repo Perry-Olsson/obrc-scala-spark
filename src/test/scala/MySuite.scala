@@ -3,23 +3,22 @@ import org.apache.log4j.Logger
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Suite
 import org.scalatest.funsuite.AnyFunSuite
+import org.apache.spark.rdd.RDD
 // For more information on writing tests, see
 // https://scalameta.org/munit/docs/getting-started.html
 class MySuite extends AnyFunSuite with SparkTestSession {
   import spark.implicits._
 
   test("another") {
-    val lines = spark.sparkContext.parallelize(Seq("a", "b", "c"))
-    val length = lines.map(s => s.length)
-      .reduce((a, b) => a + b)
-    assert(length == 3)
-  }
-
-  test("a third") {
-    val lines = spark.sparkContext.parallelize(Seq("a", "b", "c", "c"))
-    val length = lines.map(s => s.length)
-      .reduce((a, b) => a + b)
-    assert(length == 4)
+    var testData = Seq(
+      "Alice Springs;1.0",
+      "Alice Springs;1.0",
+      "Alice Springs;1.0"
+    )
+    val dataAccess = new TestDataAccess(spark, testData)
+    SimpleApp.obrc(dataAccess)
+    val result = dataAccess.getOutput()
+    assert(result == "{Alice Springs=1.0/1.0/1.0}")
   }
 }
 
@@ -35,3 +34,20 @@ trait SparkTestSession extends BeforeAndAfterAll { self: Suite =>
     super.afterAll()
   }
 }
+
+class TestDataAccess(spark: SparkSession, input: Seq[String]) extends DataAccess[RDD[String], String] {
+  var output: String = null
+
+  override def readData(): RDD[String] = {
+    return spark.sparkContext.parallelize(input)
+  }
+
+  override def writeData(data: String): Unit = {
+    this.output = data
+  }
+
+  def getOutput(): String = {
+    return this.output
+  }
+}
+
