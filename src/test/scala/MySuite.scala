@@ -9,7 +9,7 @@ import org.apache.spark.rdd.RDD
 class MySuite extends AnyFunSuite with SparkTestSession {
   import spark.implicits._
 
-  test("another") {
+  test("all one city with same value") {
     var testData = Seq(
       "Alice Springs;1.0",
       "Alice Springs;1.0",
@@ -19,6 +19,57 @@ class MySuite extends AnyFunSuite with SparkTestSession {
     SimpleApp.obrc(dataAccess)
     val result = dataAccess.getOutput()
     assert(result == "{Alice Springs=1.0/1.0/1.0}")
+  }
+
+  test("output temp is rounded to one decimal place") {
+    var testData = Seq(
+      "Alice Springs;1.2",
+      "Alice Springs;1.3",
+      "Alice Springs;1.0"
+    )
+    val dataAccess = new TestDataAccess(spark, testData)
+    SimpleApp.obrc(dataAccess)
+    val result = dataAccess.getOutput()
+    assert(result == "{Alice Springs=1.0/1.3/1.2}")
+  }
+
+  test("more than one city") {
+    var testData = Seq(
+      "Alice Springs;6.0",
+      "Asmara;14.9"
+    )
+    val dataAccess = new TestDataAccess(spark, testData)
+    SimpleApp.obrc(dataAccess)
+    val result = dataAccess.getOutput()
+    assert(result == "{Alice Springs=6.0/6.0/6.0, Asmara=14.9/14.9/14.9}")
+  }
+
+  test("more than one city with repeated values") {
+    var testData = Seq(
+      "Alice Springs;1.0",
+      "Alice Springs;2.0",
+      "Asmara;1.0",
+      "Asmara;2.0"
+    )
+    val dataAccess = new TestDataAccess(spark, testData)
+    SimpleApp.obrc(dataAccess)
+    val result = dataAccess.getOutput()
+    assert(result == "{Alice Springs=1.0/2.0/1.5, Asmara=1.0/2.0/1.5}")
+  }
+
+  test("non sorted input is sorted") {
+    var testData = Seq(
+      "Rabat;31.1",
+      "Asmara;1.0",
+      "Asmara;2.0",
+      "Bucharest;4.3",
+      "Alice Springs;1.0",
+      "Alice Springs;2.0",
+    )
+    val dataAccess = new TestDataAccess(spark, testData)
+    SimpleApp.obrc(dataAccess)
+    val result = dataAccess.getOutput()
+    assert(result == "{Alice Springs=1.0/2.0/1.5, Asmara=1.0/2.0/1.5, Bucharest=4.3/4.3/4.3, Rabat=31.1/31.1/31.1}")
   }
 }
 
