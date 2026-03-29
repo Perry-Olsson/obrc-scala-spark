@@ -3,10 +3,16 @@ name: obrc-scala-spark
 services:
   spark:
     image: obrc-scala-spark
+    container_name: master
     build:
       context: . 
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:
-      - ./data:/data
+      - ./data:/app/data
+      - ./target/scala-2.13/:/app/local-target/ 
+    environment:
+      - ENV=local
+      - DATA_DIR=/app/data
+      - DATA_FILE=measurements.txt

@@ -4,18 +4,11 @@ import org.apache.spark.rdd.RDD
 
 object SimpleApp {
   def main(args: Array[String]): Unit = {
+    var config = Config.build(args)
     val spark = new SparkContext(
       new SparkConf().setAppName("obrc-scala")
-    );
-    var data = new DataAccess[RDD[String], String] {
-      override def readData(): RDD[String] = {
-        spark.textFile(f"${sys.env("DATA_DIR")}/measurements.txt")
-      }
-      override def writeData(data: String): Unit = {
-        println(data)
-      }
-    }
-    obrc(data)
+    )
+    obrc(DataAccessFactory.getDataAccess(config, spark))
   }
 
   def obrc(dataAccess: DataAccess[RDD[String], String]): Unit = {
@@ -67,8 +60,3 @@ object SimpleApp {
   }
 }
 
-trait DataAccess[T, K]{
-  def readData(): T
-
-  def writeData(data: K): Unit 
-}

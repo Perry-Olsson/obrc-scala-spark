@@ -11,8 +11,11 @@ RUN tar -xzvf spark-4.1.1-bin-hadoop3.tgz
 RUN rm spark-4.1.1-bin-hadoop3.tgz
 ENV SPARK_HOME ${WORKING_DIR}/spark-4.1.1-bin-hadoop3
 
-COPY infra/docker/run.sh .
-COPY target/scala-2.13/spark-examples_2.13-0.1.0-SNAPSHOT.jar .
-ENV DATA_DIR ${WORKING_DIR}/data/
+COPY infra/docker/scripts/* bin/
 
-ENTRYPOINT ["/app/run.sh"]
+COPY target/scala-2.13/*.jar bin/app.jar
+
+RUN mkdir local-target
+RUN mkdir data
+
+ENTRYPOINT ["/app/bin/run.sh"]
