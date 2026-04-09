@@ -10,7 +10,7 @@ object Config {
     if (args.length > 0) {
       fileName = args(0)
     }
-    var dataAccessDriver = sys.env("DATA_ACCESS_DRIVER")
+    var dataAccessDriver = sys.env.getOrElse("DATA_ACCESS_DRIVER", "local")
     new Config(
       env = sys.env("ENV"),
       fileName = fileName,

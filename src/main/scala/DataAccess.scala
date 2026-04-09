@@ -4,13 +4,13 @@ import org.apache.spark.SparkConf
 
 object DataAccessFactory {
   def getDataAccess(config: Config, spark: SparkContext): DataAccess[RDD[String], String] = {
-    return new LocalDevDataAccess(spark, config)
+    return new LocalDevDataAccess(spark, config.fileName)
   }
 }
 
-class LocalDevDataAccess(spark: SparkContext, config: Config) extends DataAccess[RDD[String], String] {
+class LocalDevDataAccess(spark: SparkContext, fileName: String) extends DataAccess[RDD[String], String] {
     override def readData(): RDD[String] = {
-      spark.textFile(f"${config.dataDir}/${config.dataFile}")
+      spark.textFile(f"/app/data/${fileName}")
     }
     override def writeData(data: String): Unit = {
       println(data)
